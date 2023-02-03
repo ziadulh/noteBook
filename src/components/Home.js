@@ -27,6 +27,8 @@ export const Home = () => {
   }
 
   const ref = useRef(null);
+  const ref_close = useRef(null);
+
   const editNote = async (id) => {
     const response = await fetch(url_local + "api/note/" + id, {
       method: 'GET',
@@ -42,7 +44,6 @@ export const Home = () => {
   }
 
   const handleSubmitEditData = async (enote) => {
-    console.log(enote.eid+ " fdhgds fdsghf d");
     const response = await fetch(url_local + "api/note/" + enote.eid, {
       method: 'PATCH',
       headers: {
@@ -51,6 +52,8 @@ export const Home = () => {
       },
       body: JSON.stringify({ title: enote.etitle, description: enote.edescription, tag: enote.etag })
     });
+
+    ref_close.current.click();
 
     let newNotes = JSON.parse(JSON.stringify(notes))
     for (let index = 0; index < notes.length; index++) {
@@ -62,6 +65,7 @@ export const Home = () => {
         setNotes(newNotes);
         break;
       }
+
     }
 
     // let aNote = await response.json();
@@ -100,7 +104,7 @@ export const Home = () => {
         <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
       </form>
 
-      <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" ref={ref}>
+      <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" ref={ref} hidden>
         Launch demo modal
       </button>
 
@@ -133,7 +137,7 @@ export const Home = () => {
               </form>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" ref={ref_close}>Close</button>
               <button type="button" className="btn btn-primary" onClick={() => {handleSubmitEditData(enote)}}>Save changes</button>
             </div>
           </div>
