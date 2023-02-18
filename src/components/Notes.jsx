@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import NoteContext from '../context/notes/NoteContext';
 import Note from './Note';
+import { toast } from 'react-toastify';
 
 function Notes() {
     const context = useContext(NoteContext);
@@ -35,8 +36,7 @@ function Notes() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        AddNote(note)
-        addNoteLaunchButtonClose.current.click();
+        AddNote(note, setNote, addNoteLaunchButtonClose)
     }
 
     const editNote = async (id) => {
@@ -54,30 +54,42 @@ function Notes() {
     }
 
     const handleSubmitEditData = async (enote) => {
-        const response = await fetch(url_local + "api/note/" + enote.eid, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjNiYmJlNDM2MGVjNDE0NmYzOTEwMjVhIiwidHlwZSI6IkFkbWluIn0sImlhdCI6MTY3MzM2NTEwNn0.lZ8RCScbeWz4947FTai5Euw_gA-P2Grl3qFQv8X7EeU'
-            },
-            body: JSON.stringify({ title: enote.etitle, description: enote.edescription, tag: enote.etag })
-        });
-        console.log(await response.json());
-
-        ref_close.current.click();
-
-        let newNotes = JSON.parse(JSON.stringify(notes))
-        for (let index = 0; index < notes.length; index++) {
-            const element = newNotes[index];
-            if (enote.eid === element._id) {
-                newNotes[index].title = enote.etitle;
-                newNotes[index].description = enote.edescription;
-                newNotes[index].tag = enote.etag;
-                setNotes(newNotes);
-                break;
+        try {
+            const response = await fetch(url_local + "api/note/" + enote.eid, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjNiYmJlNDM2MGVjNDE0NmYzOTEwMjVhIiwidHlwZSI6IkFkbWluIn0sImlhdCI6MTY3MzM2NTEwNn0.lZ8RCScbeWz4947FTai5Euw_gA-P2Grl3qFQv8X7EeU'
+                },
+                body: JSON.stringify({ title: enote.etitle, description: enote.edescription, tag: enote.etag })
+            });
+    
+            if(response.status === 200){
+                let newNotes = JSON.parse(JSON.stringify(notes))
+                for (let index = 0; index < notes.length; index++) {
+                    const element = newNotes[index];
+                    if (enote.eid === element._id) {
+                        newNotes[index].title = enote.etitle;
+                        newNotes[index].description = enote.edescription;
+                        newNotes[index].tag = enote.etag;
+                        setNotes(newNotes);
+                        break;
+                    }
+                }
+                ref_close.current.click();
+                toast.success("Note updated successfully");
+            }else{
+                let json = await response.json();
+                (json.errors).forEach(el => {
+                toast.error(el.msg);
+                });
             }
-
+        } catch (error) {
+            toast.error("Oops! Something went wrong!");
         }
+        
+
+        
     }
 
     return (
@@ -87,6 +99,7 @@ function Notes() {
                     <div className="col-md-3"><h2>All Notes</h2></div>
                     <div className="col-md-3 offset-6"><i className=' btn btn-info fa fa-plus float-end' onClick={addNoteLaunchModal}></i></div>
                 </div>
+                <div hidden={notes.length > 0}> No notes available</div>
                 <div className='row'>
                     {
                         notes.map((n) => {
@@ -111,15 +124,15 @@ function Notes() {
                             <form>
                                 <div className="mb-3">
                                     <label htmlFor="title" className="form-label">Enter Name</label>
-                                    <input type="text" className="form-control" id="title" name="title" onChange={changeData} />
+                                    <input type="text" className="form-control" id="title" name="title" onChange={changeData} value={note.title} required />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="description" className="form-label">Enter Description</label>
-                                    <input type="text" className="form-control" id="description" name="description" onChange={changeData} />
+                                    <input type="text" className="form-control" id="description" name="description" onChange={changeData} value={note.description} required />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="tag" className="form-label">Select Tag</label>
-                                    <select className="form-select" id="tag" name="tag" onChange={changeData} aria-label="Default select example">
+                                    <select className="form-select" id="tag" name="tag" onChange={changeData} aria-label="Default select example" value={note.tag}>
                                         <option>Select</option>
                                         <option value="General">General</option>
                                         <option value="Special">Special</option>
@@ -130,7 +143,7 @@ function Notes() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" ref={addNoteLaunchButtonClose} >Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleSubmit} >Submit</button>
+                            <button disabled={ note.title.length < 5 || note.description.length < 5 }  type="button" className="btn btn-primary" onClick={handleSubmit} >Submit</button>
                         </div>
                     </div>
                 </div>
@@ -168,7 +181,7 @@ function Notes() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" ref={ref_close}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={() => { handleSubmitEditData(enote) }}>Update</button>
+                            <button type="button" className="btn btn-primary" onClick={() => { handleSubmitEditData(enote) }} disabled={ (enote.etitle.length < 5 || enote.etitle.length > 50) || enote.edescription.length < 5 }>Update</button>
                         </div>
                     </div>
                 </div>

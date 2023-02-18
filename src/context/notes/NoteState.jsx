@@ -1,7 +1,6 @@
 import { useState } from "react";
 import NoteContext from "./NoteContext";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 const NoteState = (props) => {
 
@@ -22,7 +21,7 @@ const NoteState = (props) => {
 
   }
 
-  const AddNote = async (data) => {
+  const AddNote = async (data, setNote, addNoteLaunchButtonClose) => {
     try {
       const response = await fetch(url_local+"api/note/create", {
         method: 'POST',
@@ -35,16 +34,15 @@ const NoteState = (props) => {
 
       if(response.status === 200){
         let json = await response.json();
-        console.log(json, response);
         setNotes(notes.concat(json.note));
+        setNote({ title: "", description: "", tag: "" });
+        toast.success("Note added successfully");
+        addNoteLaunchButtonClose.current.click();
       }else{
         let json = await response.json();
-        // let msg = '';
         (json.errors).forEach(el => {
           toast.error(el.msg);
-          // msg += '*'+el.msg+'\n'
         });
-        // toast.error(msg);
       }
   
     } catch (error) {
@@ -63,6 +61,12 @@ const NoteState = (props) => {
       }
       // body: JSON.stringify(data)
     });
+
+    if(response.status === 200){
+      toast.success("Note deleted successfully");
+    }else{
+      toast.error("Oops! Something went wrong,");
+    }
 
   }
 

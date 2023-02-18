@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext } from 'react'
 import NoteContext from '../context/notes/NoteContext';
 
 function Note(props) {
@@ -9,7 +9,7 @@ function Note(props) {
     const deleteNoteByClick = (id) => {
         if (window.confirm("Are you sure!")) {
             const newNotes = notes.filter((note) => {
-                return note._id != id;
+                return note._id !== id;
             });
             setNotes(newNotes)
             deleteNote(id);
