@@ -7,11 +7,13 @@ function Note(props) {
     const { notes, setNotes, deleteNote } = context;
 
     const deleteNoteByClick = (id) => {
-        const newNotes = notes.filter((note) => {
-            return note._id != id;
-        });
-        setNotes(newNotes)
-        deleteNote(id);
+        if (window.confirm("Are you sure!")) {
+            const newNotes = notes.filter((note) => {
+                return note._id != id;
+            });
+            setNotes(newNotes)
+            deleteNote(id);
+        }
     }
 
     return (
