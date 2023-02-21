@@ -7,6 +7,7 @@ import Notes from "./components/Notes";
 import NoteState from "./context/notes/NoteState";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Login from "./components/Login/Login";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route exact path="/" element={ <Home/> } />
             <Route exact path="/about" element={ <About/> } />
             <Route exact path="/notes" element={ <Notes/> } />
+            <Route exact path="/login" element={ <Login/> } />
           </Routes>
         </NoteState>
       </div>

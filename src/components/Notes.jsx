@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import NoteContext from '../context/notes/NoteContext';
 import Note from './Note';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 function Notes() {
     const context = useContext(NoteContext);
@@ -21,9 +22,15 @@ function Notes() {
     const addNoteLaunchButton = useRef(null);
     const addNoteLaunchButtonClose = useRef(null);
 
-    const url_local = "http://localhost:5000/";
+    const url_local = process.env.REACT_APP_URL;
+    let navigate = useNavigate();
+    
     useEffect(() => {
-        getNotes();
+        if(localStorage.getItem('auth-token')){
+            getNotes();
+        }else{
+            navigate('/login')
+        }
     }, []);
 
     const changeEData = (e) => {

@@ -7,13 +7,15 @@ const NoteState = (props) => {
   const init_data = [];
   const [notes, setNotes] = useState(init_data);
 
-  const url_local = "http://localhost:5000/";
+  const url_local = process.env.REACT_APP_URL;
   const getNotes = async () => {
+    console.log(url_local);
     const response = await fetch(url_local+"api/note", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjNiYmJlNDM2MGVjNDE0NmYzOTEwMjVhIiwidHlwZSI6IkFkbWluIn0sImlhdCI6MTY3MzM2NTEwNn0.lZ8RCScbeWz4947FTai5Euw_gA-P2Grl3qFQv8X7EeU'
+        // 'auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjNiYmJlNDM2MGVjNDE0NmYzOTEwMjVhIiwidHlwZSI6IkFkbWluIn0sImlhdCI6MTY3MzM2NTEwNn0.lZ8RCScbeWz4947FTai5Euw_gA-P2Grl3qFQv8X7EeU'
+        'auth-token': localStorage.getItem('auth-token')
       },
     });
     let json = await response.json();
