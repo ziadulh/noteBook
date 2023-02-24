@@ -3,6 +3,7 @@ import NoteContext from '../context/notes/NoteContext';
 import Note from './Note';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import Spinner from './Spinner/Spinner';
 
 function Notes() {
     const context = useContext(NoteContext);
@@ -13,6 +14,9 @@ function Notes() {
     const changeData = (e) => {
         setNote({ ...note, [e.target.name]: e.target.value });
     }
+
+    // spinner state
+    let [spinnerVal, setSpinnerVal] = useState(false);
 
     const [enote, setENote] = useState({ eid: '', etitle: "", edescription: "", etag: "" });
 
@@ -28,6 +32,7 @@ function Notes() {
     useEffect(() => {
         if(localStorage.getItem('auth-token')){
             getNotes();
+            setSpinnerVal(true);
         }else{
             navigate('/login')
         }
@@ -43,7 +48,10 @@ function Notes() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        AddNote(note, setNote, addNoteLaunchButtonClose)
+        setSpinnerVal(false);
+        AddNote(note, setNote, addNoteLaunchButtonClose);
+        setSpinnerVal(true);
+
     }
 
     const editNote = async (id) => {
@@ -62,6 +70,7 @@ function Notes() {
 
     const handleSubmitEditData = async (enote) => {
         try {
+            setSpinnerVal(false);
             const response = await fetch(url_local + "api/note/" + enote.eid, {
                 method: 'PATCH',
                 headers: {
@@ -91,6 +100,7 @@ function Notes() {
                 toast.error(el.msg);
                 });
             }
+            setSpinnerVal(true);
         } catch (error) {
             toast.error("Oops! Something went wrong!");
         }
@@ -101,6 +111,7 @@ function Notes() {
 
     return (
         <div>
+            <Spinner hidden={spinnerVal} />
             <div className='container'>
                 <div className="row my-2">
                     <div className="col-md-3"><h2>All Notes</h2></div>
