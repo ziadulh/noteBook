@@ -32,6 +32,9 @@ function Navbar() {
                             <li className="nav-item">
                                 <Link className={`nav-link ${location.pathname === "/notes" ? "active" : ""}`} to="/notes">Notes</Link>
                             </li>
+                            <li className="nav-item">
+                                <Link className={`nav-link ${location.pathname === "/users" ? "active" : ""}`} to="/users">Users</Link>
+                            </li>
                         </ul>
                         {
                             check_login === null && <button className="btn btn-outline-success" type="button">Login</button>

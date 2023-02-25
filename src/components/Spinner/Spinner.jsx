@@ -2,9 +2,9 @@ import '../styles/spinner.css'
 
 function Spinner(props) {
     return (
-        <div class="spinner-backdrop" hidden={props.hidden}>
-            <div class="spinner-border text-info" role="status">
-                <span class="visually-hidden">Loading...</span>
+        <div className="spinner-backdrop" hidden={props.hidden}>
+            <div className="spinner-border text-info" role="status">
+                <span className="visually-hidden">Loading...</span>
             </div>
         </div>
     );
